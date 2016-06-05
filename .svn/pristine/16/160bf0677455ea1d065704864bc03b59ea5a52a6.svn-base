@@ -1,0 +1,20 @@
+Author: DBQ
+Blog: http://www.cnblogs.com/dubq/articles/5474785.html
+Github: https://github.com/daniel-vv/ops
+
+需求描述：
+    编写多级菜单程序，要求实现：
+        1. 多级菜单
+        2. 三级菜单
+        3. 可依次选择进入各子菜单
+        4. 所需新知识点：列表、字典
+    在任意界面按下"b" 是返回上一层, 在任意界面按下"q" 是退出程序
+
+文件说明：
+    主程序：main.py
+    流控图文件: multi_menu.pdf
+    本程序在Python3.x下测试通过
+
+脚本执行方式：
+     用python解释器调用main.py执行,如 $python3 main.py
+

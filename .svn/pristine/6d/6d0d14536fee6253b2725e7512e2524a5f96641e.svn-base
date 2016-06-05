@@ -1,0 +1,291 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+# Author: DBQ(Du Baoqiang)
+
+import datetime
+import time
+
+#print(datetime.time)
+'''
+print(time.strftime('%Y-%m-%d %H:%M:%S',time.localtime()))
+commodity_list = {
+    '家电':{
+        '西门子冰箱':4998,
+        '美的空调':3912,
+        '微波炉':1248,
+        '饮水机':328,
+        '乐视超级电视 Max70':9979,
+        '小米电视 ':4199,
+        '小天鹅全自动洗衣机':3328,
+        '格力空调':2889,
+        'MacBook Pro':10899,
+        '高压力锅':399,
+        '电磁炉':198,
+        '净水器':1999,
+    },
+       '衣服':{
+        '帽子':99,
+        'T恤':199,
+        '皮带':299,
+        '运动鞋':899,
+        '皮鞋':699,
+        '内裤':49,
+        '运动袜':29,
+        '休闲西服上':499,
+        '七分裤':249,
+        '休闲家居服套装':199,
+
+    },
+    '手机':{
+        'iPhone 6s 16G':4987,
+        'iPhone 6s 64G':5688,
+        'iPhone 6s Plus 16G':6088,
+        'iPhone 6s Plus 64G':6888,
+        '锤子坚果':899,
+        '小米Max':1999,
+        'Samsung S7':5688,
+        '华为P9':3688,
+        '魅族MX5':1999,
+    },
+}
+
+Flag = False
+for index,key in enumerate(commodity_list.keys()):
+    print(index,key)
+User_id = input('\033[33;1m请选择您感兴趣的分类  Q/q(退出程序)\033[0m').strip()
+if User_id == 'q' or User_id == 'Q':
+    Flag = True
+    #break
+if User_id.isdigit() and int(User_id) < len(commodity_list.keys()):
+    product = list(commodity_list.keys())[int(User_id)]
+    while not Flag:
+        for id2,key2 in enumerate(commodity_list[product].items()):
+            print(id2,key2)
+        print('#'*50)
+        User_id2 = input('\033[33;1m请选择您需要的商品序列添加到购物车:  Q/q(退出程序) B/b(返回)\033[0m'.center(30,'#')).strip()
+        product2 = list(commodity_list[product].keys())[int(User_id2)]
+        print(commodity_list[product][product2])
+
+        if User_id2.isdigit() and int(User_id2) < len(commodity_list[product]):
+            #print(commodity_list[product][int(User_id2)])
+            pass
+
+
+
+salary = input('请输入你的工资/准备消费的金钱?').strip()
+
+if salary.isdigit():
+    salary = int(salary)
+else:
+    exit('滚粗,输入的又不是合法的金钱,逗谁呢?')
+msg = '欢迎来到安乐窝,请选择你需要的商品'
+#print(msg)
+mall = (
+    ('MacBook Pro',10788),
+    ('MacBook Air',7888),
+    ('iPad Pro',6999),
+    ('Meizu MX5',1999),
+    ('大众Golf',167888),
+    ('美利达公爵300',1788),
+    ('Coffie',19.9),
+)
+
+#print(len(mall))
+user_shopping = []
+Flag = False
+
+while not Flag:
+    print(msg)
+    print('-'*50)
+    for item in enumerate(mall):
+        #print(item)
+        pro_index = item[0]
+        pro_item = item[1][0]
+        pro_price = item[1][1]
+        print(pro_index,pro_item,pro_price)
+    print('-'*50)
+    user_item = input('请选择你喜欢的商品,按下商品序列号,添加到购物车中, q/Q/quit:(退出)  c/check/C(检查购物车)').strip()
+    #print(msg)
+    if user_item.isdigit():
+        user_item = int(user_item)
+        if user_item < len(mall):
+            user_choose_item = mall[user_item]
+            print(user_choose_item)
+            if user_choose_item[1] <= salary:
+                user_shopping.append(mall[user_item])
+                salary -= user_choose_item[1]
+                print('添加了 [%s] 到你的购物车了,你的余额还有 [%s] '%(user_choose_item,salary))
+            else:
+                print('-'*50)
+                print('\033[31;1m你的余额不足啦,还有 [%s], 请重新选择一个能买得起的吧\033[0m'%salary)
+    elif user_item == 'q' or user_item =='Q' or user_item == 'quit':
+        print('$'*50)
+        print('\033[32;1m你选择商品如下列表,余额里还有 [%s] 元, 欢迎下次再来哈\033[0m' %salary)
+        print('End'.center(50,'$'))
+        print('Goodbye!')
+        Flag = True
+    elif user_item == 'c' or user_item =='C' or user_item == 'check':
+        print('$'*50)
+        print('\033[32;1m你选择商品如下列表,余额里还有 [%s] \033[0m' %salary)
+        print('End'.center(50,'$'))
+        print('Goodbye!')
+
+
+
+dic = {
+    1:['Iphone6s',1,6088,'2016-5-20 10:00:01'],
+    2:['Macbook Pro',2,21098,'2016-5-18 10:02:11'],
+    3:['大众高尔夫',1,180210,'2016-5-10 08:55:10']
+}
+print('ID   Product     Num     Price      datetime')
+for index,value in dic.items():
+    #print(index,value)
+    User_info = '{0}   {1}     {2}     {3}     {4}'
+    result = User_info.format(index,value[0],value[1],value[2],value[3])
+    #result = type(value)
+    print(result)
+
+dic1 = {
+
+}
+
+product_id = 1
+product = 'Iphone6s'
+product_num = 2
+product_price = 6088
+product_time = '2016-5-20 10:00:01'
+
+dic1.setdefault(product_id,[product,product_num,product_price,product_time])
+print(dic1)
+
+'''
+'''
+with open('db/user_shopping.db','r') as f:
+    for line in f:
+        print(type(line))
+        print(dict(line))
+
+
+import pickle
+
+obj = pickle.load(open('db/user_shopping.db','rb'))
+print(len(obj))
+user = input('用户名?').strip()
+for k,v in obj.items():
+    if user == k:
+        print('-'*50)
+        print('欢迎登陆 %s, 您的余额为 %s' %(user,v))
+        print('您的购物车内容如下:'.center(50,'-'))
+shopp_car = '{0}    {1}         {2}     {3}     {4}'
+product_index = 1
+for k1,v1 in obj.items():
+    if k1 != user:
+        #print(k1,v1)
+        print(shopp_car.format(product_index,k1,v1[0],v1[1],v1[2],))
+        product_index +=1
+#print(type(obj))
+#print(obj)
+
+
+
+
+
+
+
+import pickle
+user_list = {
+    'tom':'123',
+    'jerry':'123',
+    'jack':'123',
+}
+user_shopping_db = 'db/user_shopping.db'
+def username():
+    '''
+    定义一个函数,用于接收用户输入用户名密码的验证
+    如果用户名在锁定文件locked.db中,直接返回给用户已被锁定,退出程序
+    判断用户输入是否是同一用户输入三次错误尝试,如果是,则锁定用户,否则三次之后退出程序;
+    '''
+    data = open(user_shopping_db,'rb').read()
+    if len(data) == 0:
+        pass
+    else:
+        user_info = pickle.load(open(user_shopping_db,'rb'))
+    Flag = False
+    Count = 0
+    Lock_count = 1
+    user_name = ''
+    while Count < 3:
+        User_input_name = input('请输入您的用户名: ').strip()
+        if User_input_name:
+            User_input_name = str(User_input_name)
+            User_input_pass = input('请输入您的密码: ').strip()
+            with open('db/locked.db','r') as f:
+                for i in f:
+                    if User_input_name == i.strip():
+                        print('\033[31;1m您的用户已经被锁定,请联系管理员解锁!\033[0m')
+                        exit(0)
+            if User_input_name == user_name:
+                Lock_count += 1
+            else:
+                user_name = User_input_name
+                Lock_count -= 1
+            for user,passwd in user_list.items():
+                if User_input_name == user and User_input_pass == passwd: #判断用户名和密码认证是否成功
+                    shopp_car = '{0}    {1}         {2}     {3}     {4}'
+                    if len(data) != 0:
+                        id = 1
+                        for k,v in user_info.items():
+                            if User_input_name == k:
+
+                                shopp_car = '{0}    {1}         {2}     {3}     {4}'
+                                print('\033[32;1m欢迎登陆, %s, 您上一次的余额为 %s\033[0m'%(k,v))
+                                print('购物车的内容如下'.center(70,'-'))
+                                print('\033[34;1m序列       宝贝名            数量      小计      购买时间\033[0m') #先打印title
+                                for k1,v1 in user_info.items():
+                                    if User_input_name != k1:
+                                        print(shopp_car.format(id,k1,v1[0],v1[1],v1[2],))
+                                        id +=1
+                                        #continue
+                                else:
+                                    print('-'*70)
+                                    if input('按下任意键继续...'):pass
+
+                                    Flag = True
+                                    #break
+
+                    else:
+                        print('\033[32;1m欢迎登陆 %s\033[0m'.center(50,'#') %User_input_name)
+                        Flag = True
+                        break
+
+
+                if Flag:
+                    break
+            else:
+                print('用户名或密码不正确,请重新输入')
+                #print(User_input_name)
+                #print(User_input_pass)
+
+                Count += 1
+                ##if User_input_name
+        if Flag:
+            break
+    else:
+        if Lock_count == 2:
+            Deny_user(User_input_name)
+        exit(0)
+    if len(data) != 0:
+        return User_input_name,user_info
+    else:
+        return User_input_name
+
+#a,b = username()
+print(len(username()))
+'''
+user = tom
+user_sho = {
+
+}
+
+user_sho.setdefault(user)
+print(user_sho)
