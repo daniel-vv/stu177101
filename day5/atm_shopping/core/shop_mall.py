@@ -378,7 +378,7 @@ def main():
                                 continue
                     else:
                         print('\033[31;1m输入不合法,请重试!\033[0m')
-                    # if flag:break
+                    if flag:break
             if flag:break
 
 

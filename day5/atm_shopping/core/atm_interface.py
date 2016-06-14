@@ -112,21 +112,20 @@ def show_bill(user):
     limit = show_user(user,'limit')          #额度
     username = show_user(user,'user')        #账户名
     debt = float(available) - float(limit)                 #欠款金额
-    # cost = '无'
+    cost = 0
+    repayment_num = 0
 
     curr_time = shop_mall.curr_datetime()    #取出账单日期
-    Count = 0
+
     for value in user_manager.ATM_USER_INFO[user]['record'].keys():
         bill_date = value
         if struct_time.tm_mday >= 23:  #取出账单金额, 如果日期日期是22号以后,列出当月账单
             curr_time = '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon,22)
             if user_manager.ATM_USER_INFO[user]['record'].get(value):
                 curr_bill = user_manager.ATM_USER_INFO[user]['record'].get(value).get('total_debt')
-                # bill_date = value
             else:
                 curr_bill = '当月账单还未生成'
                 bill_date = '账单日每月22日'
-                # bill_date = ''
             if user_manager.ATM_USER_INFO[user]['record'][value].get('repayment'):
                 repayment_num = user_manager.ATM_USER_INFO[user]['record'][value].get('repayment')
             else:
@@ -137,33 +136,29 @@ def show_bill(user):
             else:
                 repayment_num = 0
 
-        else:
-            if Count == 0:
-                curr_time = '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon-1,22)
-                if user_manager.ATM_USER_INFO[user]['record'].get(curr_time):
-                    curr_bill = user_manager.ATM_USER_INFO[user]['record'].get(curr_time).get('total_debt')
-                    # bill_date = value
-                else:
-                    curr_bill = '当月账单还未生成'
-                    # bill_date = '账单日每月22日'
-                    # bill_date = value
+        elif '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon-1,22) in \
+                user_manager.ATM_USER_INFO[user]['record'].keys():      #如果有上月账单显示
+            curr_date = '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon-1,22)
+            curr_bill = user_manager.ATM_USER_INFO[user]['record'].get(curr_date).get('total_debt')
+            if user_manager.ATM_USER_INFO[user]['record'][curr_date].get('repayment'):
+                repayment_num = user_manager.ATM_USER_INFO[user]['record'][curr_date].get('repayment')
             else:
-                curr_time = '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon,22)
-                if user_manager.ATM_USER_INFO[user]['record'].get(value):
-                    curr_bill = user_manager.ATM_USER_INFO[user]['record'].get(value).get('total_debt')
-                    # bill_date = value
-                else:
-                    curr_bill = '当月账单还未生成'
-                if user_manager.ATM_USER_INFO[user]['record'][value].get('repayment'):
-                    repayment_num = user_manager.ATM_USER_INFO[user]['record'][value].get('repayment')
-                else:
-                    repayment_num = 0
-                if user_manager.ATM_USER_INFO[user]['record'][value].get('repayment'):
-                    repayment_num = user_manager.ATM_USER_INFO[user]['record'][value].get('repayment')
-                else:
-                    repayment_num = 0
+                repayment_num = 0
 
-        Count += 1
+            if user_manager.ATM_USER_INFO[user]['record'][curr_date].get('repayment'):
+                repayment_num = user_manager.ATM_USER_INFO[user]['record'][curr_date].get('repayment')
+            else:
+                repayment_num = 0
+
+        elif user_manager.ATM_USER_INFO[user]['available'] < float(user_manager.ATM_USER_INFO[user]['limit']) and \
+                value != '%d-%d-%d'%(struct_time.tm_year,struct_time.tm_mon,22):
+            curr_bill = user_manager.ATM_USER_INFO[user]['record'].get(value).get('total_debt')
+            repayment_num = user_manager.ATM_USER_INFO[user]['record'][value].get('repayment',0)
+            bill_date = value
+        else:
+            curr_bill = '当月账单还未生成'
+
+
 
         struct_bill_date = time.strptime(bill_date,'%Y-%m-%d')
         repayment_date = '%d-%d-%d'%(struct_bill_date.tm_year,struct_bill_date.tm_mon+1,10)  #还款日
@@ -176,7 +171,7 @@ def show_bill(user):
 
         diff_days = int(date2) - int(date1)  #差
 
-        cost = curr_bill * 0.0005 * int(diff_days) if int(diff_days) > 0 else '无'
+        cost = curr_bill * 0.0005 * int(diff_days) if int(diff_days) > 0 else 0
 
 
         if curr_bill == '当月账单还未生成':
@@ -190,7 +185,7 @@ def show_bill(user):
     {}
                 \033[0m'''.format('#'*60,user,username,curr_bill,'#'*60))
             if input('按下回车键,继续...'):pass
-        elif repayment_num and repayment_num >= curr_bill:
+        elif repayment_num and repayment_num >= curr_bill + cost:
             print('''\033[34;1m
                         个人信用卡账单:
     {}
@@ -225,6 +220,13 @@ def show_bill(user):
 
     if not user_manager.ATM_USER_INFO[user]['record']:
         print('\033[31;1m您还未有任何消费!\033[0m')
+        return False
+
+    # if cost:
+    #     return cost
+    # else:
+    #     cost = 0
+    return cost
 
 
 def show_bill_bak(user):
@@ -388,33 +390,42 @@ def repayment(user):
     用户还款函数
     :return:
     '''
-    show_bill(user)
+    cost = show_bill(user)
+    if cost:
+        cost = float(cost)
+    else:
+        cost = 0
     bill_month = input('请输入你要还款的账单日期, 如: 2016-5-22\n>>').strip()
     if bill_month and user_manager.ATM_USER_INFO[user]['record'].get(bill_month):
         bill = user_manager.ATM_USER_INFO[user]['record'].get(bill_month).get('total_debt',0)
         repayment_money = user_manager.ATM_USER_INFO[user]['record'].get(bill_month).get('repayment',0)
-        if repayment_money >= bill:  #如果已还金额大于用户账单金额,则不让其还款
+        if repayment_money >= bill + cost:  #如果已还金额大于用户账单金额,则不让其还款
             if input('\033[31;1m账单总额: [ %.2f ], 已还金额: [%.2f] 已还清当期[ %s ]账单!\033[0m'%(bill,repayment_money,bill_month)):pass
             return False
         else:
-            inp_money = input('[ %s ] 账单总额: [ %.2f ], 已还金额: [%.2f], 还差 [ %.2f ]可以还清当期账单\n请输入你要还款的金额 >>'%(bill_month,bill,repayment_money,bill-repayment_money)).strip()
-            if inp_money.isdigit() and inp_money >= '0':
+            inp_money = input('[ %s ] 账单总额: [ %.2f ], 已还金额: [%.2f], 还差 [ %.2f ]可以还清当期账单\n请输入你要还款的金额 >>'%(bill_month,bill,repayment_money,bill+cost-repayment_money)).strip()
+            if inp_money and inp_money >= '0':
                 inp_money = float(inp_money)
-                if repayment_money + inp_money >= bill:
-                    # repayment_money += inp_money
+                if repayment_money + inp_money >= bill + cost:
+
                     repayment = user_manager.ATM_USER_INFO[user]['record'][bill_month].get('repayment',0) #+= inp_money    #还款金额赋值为还款后的金额
                     repayment += inp_money
                     user_manager.ATM_USER_INFO[user]['record'][bill_month]['repayment'] = repayment
+
+                    del user_manager.ATM_USER_INFO[user]['record'][bill_month]  #还清账单之后,删除月份账单,这块在字典里真的很难判断多个账单,本想实现类似于招行信用卡那种,还完账单 \
+                                                                                #之后显示账单已还清,但是还能查看上期账单多少. 所以没办法,删除了这个功能,还完款之后直接删掉账单
+
                     user_manager.ATM_USER_INFO[user]['available'] += inp_money
 
-                    # print(user_manager.ATM_USER_INFO[user]['record'])
+
 
                     json.dump(user_manager.ATM_USER_INFO,open(user_manager.ATM_USERDB,'w'))
-                    log.atm_log(user,time.localtime(),'info','信用卡账户: [%s]  还款: [%.2f] 元  手续费[ %.2f ] 元, 账单金额: [ %.2f ], [ %s ]账单已还清'%(user,inp_money,0,bill,bill_month))
+                    log.atm_log(user,time.localtime(),'info','信用卡账户: [%s]  还款: [%.2f] 元  逾期手续费[ %.2f ] 元, 账单金额: [ %.2f ], [ %s ]账单已还清'%(user,inp_money,cost,bill,bill_month))
 
                     print('正在还款,请稍等...')
                     time.sleep(2)
                     print('\033[31;1m 已成功还清[ %s ]账单\033[0m' %bill_month)
+
                 else:
                     # repayment_money +=
                     if user_manager.ATM_USER_INFO[user]['record'][bill_month].get('repayment'):
@@ -425,8 +436,8 @@ def repayment(user):
                     print('正在还款,请稍等...')
                     time.sleep(2)
                     print('\033[31;1m账单未还清,逾期会有手续费! 已还金额 [ %.2f ], 账单金额: [ %.2f ] \033[0m'%(inp_money,bill))
-                    json.dump(user_manager.ATM_USER_INFO,open(user_manager.ATM_USERDB,'w'))
-                    log.atm_log(user,time.localtime(),'info','信用卡账户: [%s]  还款: [%.2f] 元  手续费[ %.2f ] 元'%(user,inp_money,0))
+                    json.dump(user_manager.ATM_USER_INFO,open(user_manager.ATM_USERDB,'w'))  #持久化到文件
+                    log.atm_log(user,time.localtime(),'info','信用卡账户: [%s]  还款: [%.2f] 元  逾期手续费[ %.2f ] 元'%(user,inp_money,cost))
 
     else:
         print('\033[31;1m您输入的账单不存在!')
@@ -445,7 +456,8 @@ def show_debt(user):
     debt = float(available) - float(limit)
     if debt > 0:
         debt = -debt
-    elif int(debt) == 0:
+        # debt = float(debt)
+    elif float(debt) == 0:
         debt = 0
     else:
         debt = abs(debt)
@@ -457,7 +469,7 @@ def show_debt(user):
 {}
             账    号:     [{}]
             姓    名:     [{}]
-            当前欠款:      [{}]
+            当前欠款:      [{:.2f}]
 {}
         \033[0m'''.format('#'*60,user,username,debt,'#'*60))
     if input('按下回车键,继续...'):pass
@@ -543,23 +555,24 @@ def reset_limit():
             print('用户[ %s ]不存在!')
             return False
         else:
-            print('[ %s ]用户,当前的额度为 [ %.2f ]'%(user,user_manager.ATM_USER_INFO[user].get('limit')))
+            print('[ %s ]用户,当前的额度为 [ %.2f ]'%(user,float(user_manager.ATM_USER_INFO[user].get('limit'))))
             inp_limit = input('请输入调整后的额度: ').strip()
             if int(inp_limit) <= 0 or not inp_limit:
                 print('输入的金额不合法!')
                 return False
             else:
-                if float(inp_limit) < user_manager.ATM_USER_INFO[user]['limit']:
-                    inp_diff = user_manager.ATM_USER_INFO[user]['limit'] - float(inp_limit)  #差值
-                    avi_diff = user_manager.ATM_USER_INFO[user]['limit'] - user_manager.ATM_USER_INFO[user]['available']  #差值
-                    if avi_diff >= inp_diff:
-                        user_manager.ATM_USER_INFO[user]['available'] -= ( user_manager.ATM_USER_INFO[user]['limit'] - float(inp_limit))
+                if float(inp_limit) < float(user_manager.ATM_USER_INFO[user]['limit']):
+                    inp_diff = float(user_manager.ATM_USER_INFO[user]['limit']) - float(inp_limit)  #差值
+                    if float(user_manager.ATM_USER_INFO[user]['available']) >= float(inp_diff):
+                        user_manager.ATM_USER_INFO[user]['available'] -= float(inp_diff)
                     else:
-                        print('用户可用额度无法调整到此值![ %.2f ]'%float(inp_limit))
+                        print('\033[31;1m不能调整额度到此值,错误!\033[0m')
                         return False
                 else:
-                    user_manager.ATM_USER_INFO[user]['available'] += (float(inp_limit) - user_manager.ATM_USER_INFO[user]['limit'])
-                user_manager.ATM_USER_INFO[user]['limit'] = inp_limit
+                    inp_diff = float(inp_limit) - float(user_manager.ATM_USER_INFO[user]['limit'])   #差值
+                    user_manager.ATM_USER_INFO[user]['available'] += float(inp_diff)
+
+                user_manager.ATM_USER_INFO[user]['limit'] = float(inp_limit)
 
                 json.dump(user_manager.ATM_USER_INFO,open(user_manager.ATM_USERDB,'w'))   #持久化到文件
                 log.atm_log(user,time.localtime(),'info','信用卡账户: [%s]  调整额度: [%.2f]   调整后的额度: [ %.2f ]  操作员: [ %s ]' \
