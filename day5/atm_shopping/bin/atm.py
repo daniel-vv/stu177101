@@ -4,7 +4,7 @@
 
 '''
 Author: DBQ(Du Baoqiang)
-Blog: http://www.cnblogs.com/dubq/articles/5563802.html
+Blog: http://www.cnblogs.com/dubq/p/5563802.html
 Github: https://github.com/daniel-vv/stu177101
 '''
 

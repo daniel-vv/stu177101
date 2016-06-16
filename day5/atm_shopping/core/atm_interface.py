@@ -12,16 +12,6 @@ from core import log
 from conf import setting
 
 
-'''
-available: 39101.0,
-"password: "9299805be3501d5be5e612cf9c012310",
-"limit": 50000,
-"username": "622202001",
-"record":[],
-"user":"Tom",
-"registry_date":"2016-06-05",
-"expire_date":"2021-06-05"}
-'''
 
 
 def show_help():
@@ -177,18 +167,18 @@ def show_bill(user):
         if curr_bill == '当月账单还未生成':
             print('''\033[34;1m
                         个人信用卡账单:
-    {}
+{}
                     账    号:      [{}]
                     账 户 名:      [{}]
 
                     人民币账单:      [{}]
-    {}
+{}
                 \033[0m'''.format('#'*60,user,username,curr_bill,'#'*60))
             if input('按下回车键,继续...'):pass
         elif repayment_num and repayment_num >= curr_bill + cost:
             print('''\033[34;1m
                         个人信用卡账单:
-    {}
+{}
                     账    号:      [{}]
                     账 户 名:       [{}]
 
@@ -199,13 +189,13 @@ def show_bill(user):
                     延期手续费:      [{}]
 
                     已还清当期账单全部金额!
-    {}
+{}
                 \033[0m'''.format('#'*60,user,username,curr_bill,repayment_num,bill_date,repayment_date,cost,'#'*60))
             if input('按下回车键,继续...'):pass
         else:
             print('''\033[34;1m
                         个人信用卡账单:
-    {}
+{}
                     账    号:      [{}]
                     账 户 名:       [{}]
 
@@ -214,7 +204,7 @@ def show_bill(user):
                     账单日期:        [{}]
                     到期还款日:      [{}]
                     延期手续费:      [{}]
-    {}
+{}
                 \033[0m'''.format('#'*60,user,username,curr_bill,repayment_num,bill_date,repayment_date,cost,'#'*60))
             if input('按下回车键,继续...'):pass
 
@@ -498,15 +488,16 @@ def show_user_detail(user):
                 您的账户信息:
 {}
             账    号:     [{}]
-            姓    名:     [{}]
+            姓    名:      [{}]
             信用额度:      [{}]
             可用额度:      [{}]
+            取现额度:      [{}]
             注册日期:      [{}]
             过期日期:      [{}]
             当前欠款:      [{}]
             用户状态:      [{}]
 {}
-        \033[0m'''.format('#'*60,user,username,limit,available,registry_date,
+        \033[0m'''.format('#'*60,user,username,limit,available,int(available/2),registry_date,
                    expire_date,debt,freeze,'#'*60))
     if input('按下回车键,继续...'):pass
 

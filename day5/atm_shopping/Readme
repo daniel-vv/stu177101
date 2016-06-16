@@ -1,5 +1,5 @@
 Author: DBQ(Du Baoqiang)
-Blog: http://www.cnblogs.com/dubq/articles/5563802.html
+Blog: http://www.cnblogs.com/dubq/p/5563802.html
 Github: https://github.com/daniel-vv/stu177101
 
 作业需求：
@@ -107,7 +107,7 @@ Github: https://github.com/daniel-vv/stu177101
                         622202002     密码: 123      初始额度: 50000   初始可用额度: 50000   提现金额: 不超过额度的50%
     ATM管理员账号        admin   密码: admin
         关于管理员添加的用户:
-            1. 自动生成9为数的随机数(只随机最后3位数), 前6为为 622202
+            1. 自动生成9位数的随机数(只随机最后3位数), 前6为为 622202
             2. 每个用户默认有效期为5年
             3. 额度自定义
 
