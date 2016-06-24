@@ -1,0 +1,140 @@
+Author: DBQ(Du Baoqiang)
+Blog: http://www.cnblogs.com/dubq/p/5601705.html
+Github: https://github.com/daniel-vv/stu177101
+
+作业：选课系统
+
+思路：
+	管理员：
+		1、创建老师（爱好，姓名，年龄，资产=0）
+			class Teacher:
+				def __init__(self,favor,name,age):
+					self.favor = favor
+					self.name = name
+					self.age = age
+					self.asset = 0
+				def 教学事故（）
+					self.asset = self.asset -1
+
+				def gain(self,value):
+					self.asset += value
+
+			obj1 = Teacher(...)
+			obj2 = Teacher(...)
+			obj3 = Teacher(...)
+			obj4 = Teacher(...)
+			【obj1，obj2，obj3】
+			pickle.dump(【obj1，obj2，obj3】,文件)
+
+			# Teacher类型
+
+		2、创建课程
+			li = pickle.load()
+			li[0]
+
+
+			课程类
+				- 课程名
+				- 课时费
+				- 负责老师 = li[0]
+
+			功能：
+				上课
+					返回给学生学习的内容
+					负责老师挣钱li[0].gain(课时费)
+
+			课程对象()
+
+	学生：
+
+		类：
+
+		学生》选课
+
+		__init__
+			选课 = 【课程对象】
+
+		上课：
+			选课
+			1，生物课
+				课程对象.上课()
+
+文件描述:
+    文件夹/文件介绍:
+        bin  执行程序目录,主程序执行入口目录
+            student.py  学生平台程序入口,学生通过此接口进入程序
+            teacher.py  教师平台程序入口,教师通过此接口进入程序
+            manager.py  管理员平台入口,管理员通过此接口进入程序
+
+        conf 配置文件目录
+            setting.py      配置文件,主要设置一些全局变量等信息
+
+        lib 接口程序目录
+            log.py   日志相关配置
+            menu.py  各级菜单定义的文件,定义了各种函数用于各种平台的菜单显示
+            modules.py  主模块,定义三个类,分别用于教师,学生和管理员,用于在主接口调用
+
+        db  数据存放目录
+            course 文件夹, 存放课程相关数据
+                course.db  存放课程的相关数据
+                    格式:{"course":inp_name, "payment":inp_favor, "teacher":inp_id, "students_num":2,"course_detail":""}
+                        course: 课程名
+                        payment: 课时费
+                        teacher: 老师名
+                        students_num: 在学人数
+                        course_detail: 课程教程
+            manager 文件夹,存放管理员信息
+                每个用户一个文件,如tom, admin,里面存放用户名和密码等信息;
+            student 文件夹,存放学员信息
+                每个用户一个文件,如jerry, sam
+                格式:
+                    {'password': '123456',"balance":3000, "assets": 3000, study_record":[课程名, 授课老师, 学时, 课时费,上课时间] ,
+                    'username': 'sam','studentid': 'stu3304',
+                    'course': {'九阴真经': {'balance_period': 29, 'period': 30, 'teacher': '王重阳',
+                     'end_period': 1, 'payment': 300.0}}}
+                     解释:
+                        password: 密码
+                        assets: 用户资产,为用户首次金额, 如果用户充值后, 该金额也会累加
+                        balance: 用户余额, 上课会扣除相应课时费用,不足支付时,会提示用户充值.
+                        study_record: 用户上课记录
+                        username: 用户名
+                        studentid: 学号,根据用户输入的QQ,取后四位拼接而成,用于辨别用户唯一性
+                        course: 课程:
+                            balance_period:  剩余学时
+                            period: 总学时
+                            end_period: 已完结学时
+                            payment: 课时费
+                            teacher: 老师姓名
+
+        logs  日志存放路径
+            access.log  : 日志文件,记录管理员, 老师, 学员各信息,如登录, 添加,删除老师,课程, 选课,上课等等..
+
+        Readme            自述文件
+        course.pdf        流程图
+
+
+
+运行说明:
+    本程序在 Mac下的PyCharm(5.0.3 Pro),以及Mac 终端(Python3.5解释器)中测试通过.
+    执行方式: python3 /path/to/dirname/bin/student.py        或者   进入bin目录./student.py
+             python3 /path/to/dirname/bin/manager.py        或者   进入bin目录./manager.py
+             python3 /path/to/dirname/bin/teacher.py        或者   进入bin目录./teacher.py
+
+             或者在Pycharm中运行各自运行三个主程序.
+
+
+账户说明:
+    默认管理员:
+        账号: admin    密码: 123456
+        账号: tam      密码: 123456
+
+    默认老师:
+        老师由管理员添加而成, 自己无法注册.
+            登录名为老师姓名, 如欧阳锋. 初始密码为123, 初次登录需要修改密码,否则无法登录. 登录后应妥善保管密码, 改程序没有提供重置密码接口.
+
+    学生:
+        学生可以自行注册, 系统默认两个账号:
+        账号: sam      密码: 123456
+        账号: jerry    密码: 123456
+
+
