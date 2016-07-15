@@ -1,0 +1,43 @@
+2016-07-15 13:57:00,066 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54471)
+2016-07-15 14:01:54,832 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54493)
+2016-07-15 14:02:33,286 - INFO - 226, tom upload zhoulibo.mp4 success 
+2016-07-15 14:02:46,520 - INFO - 220 tom  logout FTP server
+2016-07-15 14:02:49,814 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54495)
+2016-07-15 14:04:33,850 - INFO - 226, tom upload kaike.mp4 success 
+2016-07-15 14:07:56,073 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54504)
+2016-07-15 14:09:47,607 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54507)
+2016-07-15 14:09:59,587 - INFO - 250 tom del kaike.mp4 success, IP/Port: ('127.0.0.1', 54507)
+2016-07-15 14:10:16,684 - INFO - 250 tom del test2.mp4 success, IP/Port: ('127.0.0.1', 54507)
+2016-07-15 14:10:42,489 - INFO - 250 tom del testdir success, IP/Port: ('127.0.0.1', 54507)
+2016-07-15 14:10:47,498 - INFO - 250 tom del zhoulibo.mp4 success, IP/Port: ('127.0.0.1', 54507)
+2016-07-15 14:10:54,973 - INFO - 220 tom  logout FTP server
+2016-07-15 14:12:43,183 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54517)
+2016-07-15 14:12:50,707 - INFO - 220 sam  logout FTP server
+2016-07-15 14:13:19,060 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54521)
+2016-07-15 14:13:43,591 - INFO - 226, tom upload zhoulibo.mp4 success 
+2016-07-15 14:14:04,739 - INFO - 220 tom  logout FTP server
+2016-07-15 14:14:08,177 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54523)
+2016-07-15 14:15:03,461 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54526)
+2016-07-15 14:15:13,629 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54527)
+2016-07-15 14:15:37,489 - INFO - 226, tom upload kaike.mp4 success 
+2016-07-15 14:16:04,542 - INFO - 230 jerry login FTP server successfully, IP/Port: ('127.0.0.1', 54532)
+2016-07-15 14:16:14,527 - INFO - 226, jerry upload kaike.mp4 success 
+2016-07-15 14:19:23,071 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54541)
+2016-07-15 14:19:24,956 - INFO - 220 tom  logout FTP server
+2016-07-15 14:19:27,706 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54542)
+2016-07-15 14:20:20,975 - INFO - 220 jerry  logout FTP server
+2016-07-15 14:22:07,214 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54548)
+2016-07-15 14:22:21,025 - INFO - 226, sam upload kaike.mp4 success 
+2016-07-15 14:22:23,231 - INFO - 220 sam  logout FTP server
+2016-07-15 14:22:41,925 - INFO - 230 sam login FTP server successfully, IP/Port: ('127.0.0.1', 54549)
+2016-07-15 14:22:47,177 - INFO - 250 sam del kaike.mp4 success, IP/Port: ('127.0.0.1', 54549)
+2016-07-15 14:22:51,928 - INFO - 220 sam  logout FTP server
+2016-07-15 14:22:59,444 - INFO - 230 tom login FTP server successfully, IP/Port: ('127.0.0.1', 54550)
+2016-07-15 14:23:05,742 - INFO - 250 tom del kaike.mp4 success, IP/Port: ('127.0.0.1', 54550)
+2016-07-15 14:23:10,905 - INFO - 250 tom del zhoulibo.mp4 success, IP/Port: ('127.0.0.1', 54550)
+2016-07-15 14:23:17,665 - INFO - tom create dir test successfully, IP/Port: ('127.0.0.1', 54550)
+2016-07-15 14:23:25,085 - INFO - 250 tom del test success, IP/Port: ('127.0.0.1', 54550)
+2016-07-15 14:23:29,916 - INFO - 220 tom  logout FTP server
+2016-07-15 14:23:34,600 - INFO - 230 jerry login FTP server successfully, IP/Port: ('127.0.0.1', 54551)
+2016-07-15 14:23:39,777 - INFO - 250 jerry del kaike.mp4 success, IP/Port: ('127.0.0.1', 54551)
+2016-07-15 14:23:43,240 - INFO - 220 jerry  logout FTP server

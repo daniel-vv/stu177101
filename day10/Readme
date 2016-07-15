@@ -1,0 +1,274 @@
+Author: DBQ(Du Baoqiang)
+Blog:   http://www.cnblogs.com/dubq/p/5672988.html
+Github: https://github.com/daniel-vv/stu177101
+
+
+作业：开发一个支持多用户在线的FTP程序
+
+要求：
+    1. 用户加密认证
+    2. 允许同时多用户登录
+    3. 每个用户有自己的家目录 ，且只能访问自己的家目录
+    4. 对用户进行磁盘配额，每个用户的可用空间不同
+    5. 允许用户在ftp server上随意切换目录
+    6. 允许用户查看当前目录下文件
+    7. 允许上传和下载文件，保证文件一致性
+    8. 文件传输过程中显示进度条
+    9. 附加功能：支持文件的断点续传
+
+程序运行说明:
+    本程序在如下平台上测试通过:
+        Ubuntu(LTS 14.04)/Debian(wheezy),  (强烈建议在Ubuntu14.04平台上运行)
+        Mac 终端(Python3.5解释器)中测试通过.
+        Mac下的PyCharm(5.0.3 Pro)
+
+    一. 服务器程序运行方式:
+
+        程序运行方式一: python3 /path/to/dirname/bin/FTPServer.py        或者   进入bin目录./FTPServer.py
+
+        程序运行方式二:
+            在Pycharm中执行
+
+        程序运行方式三:
+            进程执行方式(本程序提供Upstart程序启动脚本):   ps: 建议在Ubuntu/Debian平台上使用此方式
+                1. 复制服务器目录下的配置文件(/path/to/dirname/FTPServer/scripts/FTPServer.conf) 到 /etc/init/
+                    如: cp /home/stu177101/day10/FTPServer/scripts/FTPServer.conf /etc/init
+                2. 修改复制后的程序启动配置文件:
+                    (1)更改程序所在的绝对路径, 在配置文件第9行
+                        # vim /etc/init/FTPServer.conf
+                        #更改后的值如下:
+                        env FTPServer_HOME="/home/stu177101/day10"
+                    (2)更改解释器,在配置文件第11行, 注意,如果平台上的环境变量中如果有python3的话, 此处不用修改.
+                        如果本地没有环境变量中没有python3的话, 请修改为python3解释器的绝对路径
+                        env Python_exec="python3"
+                3. 修改配置文件:
+                    此步骤主要修改监听IP/Port:  修改[server] 区段的IP和Port值即可, 默认监听0.0.0.0:8001
+                    vim /path/to/dirname/FTPServer/config/server.conf
+                        ip = 0.0.0.0
+                        port = 8001
+                4. 启动/停止/重启服务:
+                    Upstart 进程管理方式:
+                        [initctl] <start|stop|restart|status> FTPServer
+                    如启动:(需要root权限,如不是root, 需要sudo)
+                        # initctl start FTPServer      #root权限
+                        $ sudo initctl start FTPServer #普通用户sudo权限
+                    如停止:
+                        # initctl stop FTPServer
+                        $ sudo initctl stop FTPServer
+                    如重启:
+                        # initctl restart FTPServer
+                        $ sudo initctl restart FTPServer
+
+                    程序启动日志:
+                        /var/log/upstart/FTPServer.log     #Ubuntu14.04 / Debian Wheezy
+                    程序运行日志:
+                        /
+
+
+                PS:
+                    下面所说的重启进程方式,均按照 root权限和在Ubuntu/Debian平台上的upstart进程管理方式!
+
+    二. 客户端程序运行方式:
+        1. 修改配置文件:
+            vim /path/to/FTPClient/config/client.conf   修改对应服务器的IP和端口
+            如:
+                [client]
+                ip = 127.0.0.1      #如在本机运行程序,保持127.0.0.1 即可, 否则,请修改对应IP
+                port = 8001
+
+        2. 进程运行方式:
+
+            运行方式一: 在Linux/Mac终端下运行
+                python3 /path/to/dirname/bin/FTPClient.py        或者   进入bin目录./FTPClient.py
+
+            运行方式二:
+                在Pycharam中执行, 需要将Python解释器换成Python3.x
+                    /path/to/dirname/bin/FTPClient.py
+
+文件及目录说明:
+    #FTP 服务器程序目录
+        FTPServer/      #FTP 服务器程序目录
+        ├── bin         #执行程序目录
+        │   ├── FTPServer.py    #FTP程序运行文件, 启动服务时,执行此文件
+        │   └── __init__.py
+        ├── config      #配置文件目录
+        │   ├── __init__.py
+        │   ├── __pycache__
+        │   │   ├── __init__.cpython-34.pyc
+        │   │   ├── __init__.cpython-35.pyc
+        │   │   ├── settings.cpython-34.pyc
+        │   │   └── settings.cpython-35.pyc
+        │   ├── server.conf         #FTP服务器配置文件
+        │   └── settings.py         #全局变量以及模块导入变量文件
+        ├── db          #数据目录,用于存放用户家目录,以及用户的账户信息的文件
+        │   ├── home    #用户家目录, 每个用户单独一个, 如tom, jerry
+        │   │   ├── jerry   #用户家目录
+        │   │   │   ├── kaike.mp4  #家目录中的文件
+        │   │   ├── test
+        │   │   └── tom
+        │   │       └── testdir
+        │   │           └── kaike.mp4
+        │   ├── __init__.py
+        │   └── userdb.json   #全局用户数据库文件,存放用户的账号, 密码, 磁盘配额, 使用空间等等
+        ├── __init__.py
+        ├── lib         #主模块目录,存放接口模块,供调用
+        │   ├── __init__.py
+        │   ├── log.py  #日志模块
+        │   ├── modules.py   #主接口模块
+        │   └── __pycache__
+        │       ├── __init__.cpython-34.pyc
+        │       ├── __init__.cpython-35.pyc
+        │       ├── log.cpython-34.pyc
+        │       ├── log.cpython-35.pyc
+        │       ├── modules.cpython-34.pyc
+        │       └── modules.cpython-35.pyc
+        ├── logs   #日志目录,存放程序日志
+        │   ├── access.log       #程序日志文件
+        │   └── __init__.py
+        └── scripts   #脚本目录, 存放平台启动脚本
+            ├── FTPServer.conf   Ubuntu/Debian平台(以及所有支持Upstart进程管理方式的Linux)的进程启动文件
+            └── __init__.py
+
+    #FTP 客户端程序目录:
+        FTPClient/
+        ├── bin     #程序运行目录
+        │   ├── FTPClient.py   #客户端程序主运行命令
+        │   ├── __init__.py
+        ├── config
+        │   ├── client.conf    #客户端程序配置文件, 主要是连接服务器的端口和IP地址
+        │   └── __init__.py
+        ├── __init__.py
+        ├── lib     #程序接口目录,存放模块调用接口文件
+            ├── __init__.py
+            ├── modules.py   #主模块文件
+            └── settings.py  #全局变量以及模块导入变量文件
+
+    Readme:         自述文件
+    ftp流控图.pdf    流控(思维导图)图
+
+
+账户说明:
+    本程序默认提供三个测试用户:
+    账号: tom     密码: 123
+    账号: jerry   密码: 123
+    账号: sam     密码: 123
+
+
+关于磁盘配额:
+    程序支持单个用户的磁盘配额, 需要在服务器配置文件 server.conf中修改(ini格式), 如下:
+    [tom]   #用户名
+    quota = 800   #单位为MB,暂不支持其他单位! 另外,不能带单位!
+
+    如果没有单独指定配额, 将加载系统默认的 default 选项, 即默认: 400M
+    如果给单独用户指定了配额, 将加载单独的配额信息
+
+    修改配置文件之后,需要重启FTP服务器进程:
+
+        # initctl restart FTPServer           #root权限
+        $ sudo initctl restart FTPServer      #普通用户, sudo权限
+
+
+
+
+支持help:
+    语法: help [command]
+
+支持的命令:
+    cd      改变服务器目录
+    ls      列出服务器目录文件
+    pwd     列出当前在服务器的目录
+    get     下载
+    put     上传
+    lcd     改变本地目录
+    lpwd    列出当前本地目录
+    ldir    列出当前本地目录下文件
+    rename  重命名文件/目录
+    delete  删除远程目录/文件
+    !command  执行本地命令
+    system  查看服务器平台信息
+    status  查看用户状态以及版本信息
+    ...
+    ...
+
+    PS: 详见help
+
+支持断点续传:
+    上传:
+        1. 判断用户已上传文件是否存在,如存在,比对大小,如果接受到的文件已经和要发送的大小一致,那么返回用于文件已存在. 否则,发送已接收到的大小给客户端
+        2. 客户端收到可以续传的指令后,交互式让用户选择是否续传?
+        3. 如用户确定续传, 发送给服务器确认信息
+        4. 客户端打开文件, 并用seek将文件指针指向到服务器已经接收到的大小位置;
+        5. 并已追加的形式打开文件, 置已接收到的数据大小为已经收到的大小和等待用户发送数据的确认代码,等待用户发送
+        6. 客户端收到服务器的代码后,开始发送.
+        7. 完成后, 客户端比对文件的Md5值,并发送完成代码和MD5值给服务器
+        8. 服务器收到发送完成代码和MD5值后,hash收到的文件, 并比对用户发送的md5值,如果一样,发送给用户接受验证成功的代码.
+        9. 客户端打印服务器发送过来的验证结果代码以及消息.
+
+    下载同理...
+
+
+程序中的代码说明:
+    认证代码：
+        331:    提示输入密码
+        230:    认证成功
+        530：   认证失败,用户名或者密码错误
+
+    列出目录：
+        150：    列表目录，150 Here comes the directory listing.
+        226：    数据发送完成ok，226 Directory send OK.
+
+    改变目录：
+        250     目录切换成功
+        550	    不能改变到此目录
+        403	    没有权限,拒绝进入此目录
+
+    下载：
+        227:    md5 比对完成
+        200:    wb模式打开
+        210：   ab模式，续传文件
+        400:    客户端已经存在文件
+        401:    用户放弃续传
+        226:    传送完成
+        551:    不支持下载文件夹
+        550:     下载文件出现未知错误
+        404:     没有找到文件或者目录
+
+    上传：
+        551     用户磁盘配额超出限制
+        150     成功， 正在上传
+        210     续传模式
+        211     用户确定续传
+        212     服务器确认续传回答代码，
+        410     用户放弃续传
+        225     客户端发送完成
+        226     服务器接受完成，并验证成功
+        550     服务器接受完成，但是没有验证成功
+
+
+    删除：
+        250     执行成功
+        404     找不到文件
+        550     不能删除非空目录
+        403     拒绝, 没有权限
+
+    退出登录：
+        220  客户端发送给服务器代码告诉要退出
+
+    创建目录
+        257     创建成功
+        550     创建目录失败, 目录存在或者名字不合法
+        403     拒绝操作,没有权限
+
+    改名:
+        350    服务器确认编码,告诉客户端源文件存在
+        351    客户端确认编号
+        250    rename成功
+        401    目标文件已经存在
+        404    源文件/文件夹不存在
+
+
+
+
+
+
+
