@@ -1,0 +1,53 @@
+Author: DBQ(Du Baoqiang)
+Blog:   http://www.cnblogs.com/dubq/p/5702663.html
+Github: https://github.com/daniel-vv/stu177101
+
+作业：
+	1. 利用RabbitMQ  -->  RPC
+		两台机器
+	2. SQLAlchemy + paramiko  主机管理
+		两个表：最少
+			主机表
+				业务线(一对多)
+
+		业务线
+		给业务线的主机发送命令，通过paramiko执行
+			MySQL保存主机对应关系
+			SQLAchemy获取或者设置数据
+			发送数据， 获取数据 ——> paramiko
+
+程序运行说明:
+    本程序在如下平台上测试通过:
+        Ubuntu(LTS 14.04)/Debian(wheezy,jessie)
+        Mac 终端(Python3.5解释器)中测试通过.
+        Mac下的PyCharm(5.0.3 Pro)
+
+    作业一运行方式:
+        1. 服务器程序
+            1) 将rpc_server.py 放到要远程调用的服务器上, 使用 python3 /path/to/rpc_server.py 或者 在PyCharm中执行
+            2) 而后根据程序提示, 输入要执行的 RPC命令
+            3) 输入q 或者 Q退出程序
+        2. 客户端程序
+            1) 将rpc_agent.py 放到要远程控制的服务器上(agent), 使用python3 /path/to/rpc_agent.py 或者在 PyCharm中执行
+            2. 成功运行后,程序提示 RPC Agent is running(27421)..., Exit the program enter CTRL+C
+
+        前提条件:
+            server 和 agent 类在实例化的时候都需要手动指定一些参数:
+            1. 需要传入RabbitMQ运行的主机IP和端口:
+               host=RabbitMQ_IP,port=RabbitMQ_Port
+               默认值为None, 如果为默认值, 主机IP和Port为测试环境下的主机IP和端口, 即: 172.16.30.162 5672
+            2. 需要手动传入一个 接受RPC命令的队列名, 默认值为None,不传值, 默认传输命令队列名称为 rpc_queue
+
+
+文件及目录说明:
+    作业一:
+        |____rpc_rabbitmq    #作业一主目录
+        | |______init__.py
+        | |____rpc_agent.py  #rpc_agent文件, 主要是放在远程主机中使用,用于接收服务器传到指定队列的值,并按照回调队列属性,放到指定队列中
+        | |____rpc_server.py #RPC Server文件,主要是在要调用远程主机的服务器中使用,用于接收客户输入的命令,传入随机的一个队列,并将命令发送给
+                             #agent(默认为rpc_queue队列),并传入特定的随机回调队列给agent,让其把命令执行结果放到该队列中.并针对每一条命令
+                             #生成并关联一个全局唯一的UUID,用于判定agent返回的结果是否是该条命令的执行结果
+
+        | |____rpc_rabbitmq.png   # 作业一流控图
+
+    Readme     #自述文件, 含作业一(rpc_rabbitmq)和作业二(host_manager)
