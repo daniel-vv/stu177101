@@ -28,7 +28,7 @@ class FibonacciRpcServer:
             self.queue = 'rpc_queue'
         else:
             self.queue = queue
-        self.connect = pika.BlockingConnection(pika.ConnectionParameters(host='172.16.30.162'))  #和RabbitMQ建立TCP连接
+        self.connect = pika.BlockingConnection(pika.ConnectionParameters(host=self.host,port=self.port))  #和RabbitMQ建立TCP连接
         self.channel = self.connect.channel()                 #创建虚拟连接
         result = self.channel.queue_declare(exclusive=True)   #创建一个独有的队列用于客户端发送命令返回结果的回调队列
         self.callback_queue = result.method.queue             #回调队列
@@ -81,7 +81,7 @@ class FibonacciRpcServer:
 
 
 if __name__ == '__main__':
-    fibonacci_rpc = FibonacciRpcServer()   #实例化
+    fibonacci_rpc = FibonacciRpcServer(host='172.16.30.162')   #实例化
     while True:
         command = input('Please enter a RPC command, q/Q(quit)\n>>>').strip()
         if command == 'q' or command == 'Q':

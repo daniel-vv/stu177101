@@ -84,7 +84,7 @@ class FibonacciRpcAgent:
 if __name__ == '__main__':
     print('RPC Agent is running(%s)..., Exit the program enter CTRL+C'%os.getpid())
     try:
-        obj = FibonacciRpcAgent()
+        obj = FibonacciRpcAgent(host='172.16.30.162')
     except Exception:
         obj.close()
 
