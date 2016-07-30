@@ -37,6 +37,29 @@ Github: https://github.com/daniel-vv/stu177101
                host=RabbitMQ_IP,port=RabbitMQ_Port
                默认值为None, 如果为默认值, 主机IP和Port为测试环境下的主机IP和端口, 即: 172.16.30.162 5672
             2. 需要手动传入一个 接受RPC命令的队列名, 默认值为None,不传值, 默认传输命令队列名称为 rpc_queue
+            3. 依赖pika模块, 默认未安装, 需要安装 pip3 install pika, 详见博客 http://www.cnblogs.com/dubq/p/5702663.html
+
+
+    作业二运行方式:
+        1. 按需求修改配置文件, 主要是数据库的信息: host_manager.conf, ini格式:
+        [database]
+        host=192.168.1.105
+        port=3306
+        user=tom
+        password=123456
+        database_type=mysql
+
+        #连接数据库类型
+        connection_type=pymysql
+
+        #数据库名字,必须是已经存在的数据库
+        dbname=host_manager
+
+        2. 执行程序
+        使用python3 /path/to/bin/host_manager.py或者在Pycharm中执行
+
+        3. 初始化数据库
+        根据操作提示, 初次运行本程序,需要初始化数据库, 以后运行时不需要
 
 
 文件及目录说明:
@@ -51,3 +74,72 @@ Github: https://github.com/daniel-vv/stu177101
         | |____rpc_rabbitmq.png   # 作业一流控图
 
     Readme     #自述文件, 含作业一(rpc_rabbitmq)和作业二(host_manager)
+
+
+    作业二:
+        |____host_manager          #作业二主目录
+        | |______init__.py
+        | |____bin                 #执行程序目录
+        | | |______init__.py
+        | | |____host_manager.py   #主执行程序
+        | |____conf                #配置文件目录
+        | | |______init__.py
+        | | |______pycache__
+        | | | |______init__.cpython-35.pyc
+        | | |____host_manager.conf #程序配置文件,主要是ini格式,而后通过configparse加载配置
+        | |____lib                 #库目录
+        | | |______init__.py
+        | | |______pycache__
+        | | | |______init__.cpython-35.pyc
+        | | | |____modules.cpython-35.pyc
+        | | | |____settings.cpython-35.pyc
+        | | |____modules.py          #主模块, 定义各种类和方法, 提供接口,供执行程序调用
+        | | |____settings.py         #设置类文件, 提供各种全局变量和加载配置文件到内存中
+        | |____logs                  #日志目录
+        | | |______init__.py
+
+
+
+作业二账户说明:
+    账户类型提供两类,一类是堡垒机账号, 一类是系统用户. ps: 系统用户必须真实存在于要管理的主机中
+
+    堡垒机用户:
+        tom    密码: 123456
+        jerry  密码: 123456
+        sam    密码: 123456
+        如要修改, 需更改库文件 lib/modules.py中 104-106行对应的数据, 而后再初始化数据库
+
+    系统用户:
+        test   密码: 123456
+        如需修改,需要改库文件  lib/modules.py中 121行的数据, 而后再初始化数据库
+
+
+作业二数据库表及字段说明:
+
+    host表, 存储主机相关信息
+        id: 主键, 自增
+        host_ip: 主机IP
+        port: ssh端口
+        hostname: 主机名
+        uid:  外键关联 users表uid键
+        pid:  外键关联project表的pid键
+        gid:  外键关联user_group表的gid键
+
+    users表, 存储堡垒机用户相关信息
+        uid: 主键, 序列
+        username: 堡垒机用户
+        password: 堡垒机用户密码
+        gid:  外键关联user_group 表的 gid键
+
+    user_group表: 存储组相关信息
+        gid: 主键
+        groupname: 组名, 默认提供两个: dev 和 ops
+
+    user_to_host表: 存储ssh连接服务器的账号信息, 用户名和密码必须能登录远程服务器才行
+        uid: id
+        username: ssh远程用户名
+        password: ssh远程用户的密码
+
+    project表: 存储项目相关信息, 默认提供两个项目名: cloud 和 bigdata
+        pid: id
+        p_name: 项目名称
