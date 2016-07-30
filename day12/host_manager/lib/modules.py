@@ -229,11 +229,12 @@ class Operate_manager:
         if res:
             while True:
                 print(' 用户信息 '.center(30,'#'))
-                print('堡垒机用户: %s,   所属组: %s \n您可操作的服务器列表:'%(self.user,self.group))
-                print('序列   主机IP        主机名')
-                for i in enumerate(self.hostlist):
-
-                    print(i[0],i[1])
+                print('堡垒机用户: %s,   所属组: %s \n服务器列表:'%(self.user,self.group))
+                print('-'*30)
+                print('序列   主机IP     主机名')
+                for i,v in enumerate(self.hostlist):
+                    print(i, v[0],v[1])
+                print('-'*30)
                 inp = input('请选择你要远程管理的主机序列, q/Q(退出程序): ').strip()
                 try:
                     if inp == 'q' or inp == 'Q' or inp == 'quit':

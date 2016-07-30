@@ -61,6 +61,14 @@ Github: https://github.com/daniel-vv/stu177101
         3. 初始化数据库
         根据操作提示, 初次运行本程序,需要初始化数据库, 以后运行时不需要
 
+        4. 前提条件:
+           1) 依赖sqlalchemy, paramiko模块, 系统默认未安装,需要手动安装
+            pip3 install sqlalchemy
+            pip3 install paramiko
+           2) 操作数据库, 默认使用pymysql API, 默认未安装, 需要手动安装
+            pip3 install pymysql
+
+
 
 文件及目录说明:
     作业一:
@@ -97,6 +105,7 @@ Github: https://github.com/daniel-vv/stu177101
         | | |____settings.py         #设置类文件, 提供各种全局变量和加载配置文件到内存中
         | |____logs                  #日志目录
         | | |______init__.py
+        | |____host_manager.png      #流程图
 
 
 
