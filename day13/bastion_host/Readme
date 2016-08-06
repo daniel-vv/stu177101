@@ -1,0 +1,148 @@
+Author: DBQ(Du Baoqiang)
+Blog:   http://www.cnblogs.com/dubq/p/5702667.html
+        http://www.cnblogs.com/dubq/p/5707580.html
+Github: https://github.com/daniel-vv/stu177101
+
+作业需求:
+    完成堡垒机, 实现基于用户,用户组管理主机, 有审计功能
+
+
+一. 程序运行说明:
+    1. 测试说明
+    本程序在如下平台上测试通过:
+        Ubuntu(LTS 14.04)/Debian(wheezy,jessie)
+        Mac 终端(Python3.5解释器)中测试通过.
+        PS: 由于需要termios模块,所以在Pycharm中无法运行!
+    2. 运行前提:
+        (1)修改配置文件conf/bastion_host.conf中对应的数据库信息
+            [database]
+            host=192.168.1.105
+            port=3306
+            user=tom
+            password=123456
+            database_type=mysql
+
+            #连接数据库类型
+            connection_type=pymysql
+
+            #数据库名字,必须是已经存在的数据库
+            dbname= bastion_host
+        (2) 修改lib/db_modules.py中的初始化数据,用于测试连接远程主机, 包括主机IP\ssh端口\用户名\密码以及连接方式
+            lib/db_modules.py中的operate_db类的init_db方法数据, 大概:189行--234行之间
+    3. 执行主程序文件:
+        python3 /path/to/bastion_host/bin/bastion_host.py
+        PS: 无法在Pycharm中执行!
+
+
+二. 文件及目录说明:
+    |____bastion_host           主程序目录
+    | |____bin                  执行程序目录
+    | | |____bastion_host.py    主程序执行文件
+    | | |____handle.log         临时日志文件
+    | |____conf                 配置文件目录
+    | | |____bastion_host.conf  程序配置文件
+    | |____lib     模块目录
+    | | |____db_modules.py   DB数据库操作模块
+    | | |____manager_host.py 堡垒机管理模块
+    | | |____settings.py
+    | |____logs    日志目录, 暂时未用到
+    | |____Readme  自述文件
+    | |____堡垒机流控图.pdf   流控图
+
+三. 账户说明:
+    账户类型提供两类,一类是堡垒机账号, 一类是系统用户. ps: 系统用户必须真实存在要管理的主机中
+
+    堡垒机用户:
+        tom    密码: 123456
+        jerry  密码: 123456
+        sam    密码: 123456
+
+        如要修改, 需更改库文件 lib/db_modules.py中 212-214行对应的数据, 而后再初始化数据库
+
+    系统用户:
+        test   密码: 123456, 默认认证方式为账户名密码认证
+        如需修改,需要改库文件  lib/db_modules.py中 219-221行的数据, 而后再初始化数据库
+
+
+四. 数据库表及字段说明:
+    +---------------------------+
+    | Tables_in_bastion_host    |
+    +---------------------------+
+    | audit_log                 |   #审计日志数据表
+    | host                      |   #主机表
+    | host_user                 |   #主机对应ssh用户表,存放密码\账号\以及认证方式
+    | project                   |   #项目表
+    | user_group                |   #堡垒机用户对应组表
+    | user_profile              |   #堡垒机用户表
+    | user_profile_to_host_user |   #各种关系对应表,多对多模型
+    +---------------------------+
+
+    1. audit_log;
+    +-----------------+--------------+------+-----+---------+----------------+
+    | Field           | Type         | Null | Key | Default | Extra          |
+    +-----------------+--------------+------+-----+---------+----------------+
+    | id              | int(11)      | NO   | PRI | NULL    | auto_increment |  #不解释
+    | user_profile_id | int(11)      | YES  | MUL | NULL    |                |  #堡垒机用户ID, 外键关联user_profile.id
+    | host_user_id    | int(11)      | YES  | MUL | NULL    |                |  #ssh主机用户ID ,外键关联host_user.id
+    | cmd             | varchar(255) | YES  |     | NULL    |                |  #远程执行的命令
+    | date            | datetime     | YES  |     | NULL    |                |  #执行的时间
+    +-----------------+--------------+------+-----+---------+----------------+
+
+    2. host;
+    +----------+-------------+------+-----+---------+----------------+
+    | Field    | Type        | Null | Key | Default | Extra          |
+    +----------+-------------+------+-----+---------+----------------+
+    | id       | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | hostname | varchar(64) | NO   | UNI | NULL    |                | #主机名
+    | ip_addr  | varchar(32) | NO   | UNI | NULL    |                | #IP地址
+    | port     | int(11)     | YES  |     | NULL    |                | #端口, 默认值为22
+    +----------+-------------+------+-----+---------+----------------+
+
+    3. host_user;
+    +-----------+--------------+------+-----+---------+----------------+
+    | Field     | Type         | Null | Key | Default | Extra          |
+    +-----------+--------------+------+-----+---------+----------------+
+    | id        | int(11)      | NO   | PRI | NULL    | auto_increment |
+    | auth_type | varchar(64)  | NO   |     | NULL    |                | #认证方式, 有账户密码认证, 账户名和ssh/key认证方式两种
+    | username  | varchar(64)  | NO   |     | NULL    |                | #用户名
+    | password  | varchar(255) | YES  |     | NULL    |                | #密码
+    | host_id   | int(11)      | YES  | MUL | NULL    |                | #主机ID, 外键关联host表id键
+    +-----------+--------------+------+-----+---------+----------------+
+
+    4. project;
+    +--------------+-------------+------+-----+---------+----------------+
+    | Field        | Type        | Null | Key | Default | Extra          |
+    +--------------+-------------+------+-----+---------+----------------+
+    | id           | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | project_name | varchar(64) | NO   | UNI | NULL    |                |# 项目名称
+    +--------------+-------------+------+-----+---------+----------------+
+
+    5. user_group ;
+    +------------+-------------+------+-----+---------+----------------+
+    | Field      | Type        | Null | Key | Default | Extra          |
+    +------------+-------------+------+-----+---------+----------------+
+    | id         | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | group_name | varchar(32) | NO   | UNI | NULL    |                |  #堡垒机用户组名
+    +------------+-------------+------+-----+---------+----------------+
+
+    6. user_profile ;
+    +----------+-------------+------+-----+---------+----------------+
+    | Field    | Type        | Null | Key | Default | Extra          |
+    +----------+-------------+------+-----+---------+----------------+
+    | id       | int(11)     | NO   | PRI | NULL    | auto_increment |
+    | username | varchar(64) | NO   | UNI | NULL    |                |  #堡垒机用户名
+    | password | varchar(64) | NO   |     | NULL    |                |  #密码
+    | group_id | int(11)     | YES  | MUL | NULL    |                |  #组id,外键关联group.id
+    +----------+-------------+------+-----+---------+----------------+
+
+    7.  user_profile_to_host_user;
+    +-----------------+---------+------+-----+---------+----------------+
+    | Field           | Type    | Null | Key | Default | Extra          |
+    +-----------------+---------+------+-----+---------+----------------+
+    | id              | int(11) | NO   | PRI | NULL    | auto_increment |
+    | user_profile_id | int(11) | YES  | MUL | NULL    |                | #堡垒机用户id,外键关联user_profile.id
+    | host_user_id    | int(11) | YES  | MUL | NULL    |                | #ssh主机用户id, 外键关联 host_user.id
+    | user_group_id   | int(11) | YES  | MUL | NULL    |                | #堡垒机组id, 外键关联 user_group.id
+    | project_id      | int(11) | YES  | MUL | NULL    |                | #项目id, 外键关联 project.id
+    | host_id         | int(11) | YES  | MUL | NULL    |                | #主机id, 外键关联 host.id
+    +-----------------+---------+------+-----+---------+----------------+
