@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="http://yui.yahooapis.com/pure/0.6.0/pure-min.css">
+</head>
+<body>
+    <h1>数据展示:</h1>
+    <table border="1" class="pure-table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Password</th>
+            <th>QQ</th>
+        </tr></thead>
+        {% for item in data %}
+            <tr>
+                <td>{{ item.id}}</td>
+                <td>{{ item.username}}</td>
+                <td>{{ item.passwd}}</td>
+                <td>{{ item.qq}}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
