@@ -25,7 +25,7 @@ class User_group(Base):
 class Project(Base):
     __tablename__ = 'project'
     pid = Column(Integer,primary_key=True,autoincrement=True)
-    p_name = Column(String(16),nullable=False,unique=True)
+    p_name = Column(String(16),nullable=False)
 
 class Users(Base):
     '''
@@ -33,9 +33,19 @@ class Users(Base):
     '''
     __tablename__ = 'users'
     uid = Column(Integer,primary_key=True,autoincrement=True)   #uid
-    username = Column(String(32),nullable=False,unique=True)    #用户名,值需要唯一
+    username = Column(String(32),nullable=False)    #用户名,值需要唯一
     password = Column(String(32),nullable=False)                #密码
     gid = Column(Integer,ForeignKey('user_group.gid'),nullable=False)  #对应组, 关联外键 用户组表的gid
+
+class User_to_host(Base):
+    '''
+    服务器远程ssh连接的用户名和密码表
+    '''
+    __tablename__ = 'user_to_host'
+    uid = Column(Integer,primary_key=True,autoincrement=True)   #uid, host表外键uid关联到此键
+    username = Column(String(32),nullable=False)                #ssh用户名
+    password = Column(String(32),nullable=False)                #ssh密码
+
 
 class Host(Base):
     '''
@@ -50,14 +60,6 @@ class Host(Base):
     pid = Column(Integer,ForeignKey('project.pid'),nullable=False)       #外键,关联项目表
     gid = Column(Integer,ForeignKey('user_group.gid'),nullable=False)    #外键, 关联用户组表
 
-class User_to_host(Base):
-    '''
-    服务器远程ssh连接的用户名和密码表
-    '''
-    __tablename__ = 'user_to_host'
-    uid = Column(Integer,primary_key=True,autoincrement=True)   #uid, host表外键uid关联到此键
-    username = Column(String(32),nullable=False)                #ssh用户名
-    password = Column(String(32),nullable=False)                #ssh密码
 
 class operate_db:
     '''
@@ -73,7 +75,6 @@ class operate_db:
             self.session = self.Session()
         except OperationalError:
             print('连接数据库超时!')
-
 
     def init_db_meta(self):
         '''
@@ -92,6 +93,35 @@ class operate_db:
         '''
         Base.metadata.drop_all(settings.engine)
 
+    def init_db_user(self):
+        '''
+        初始化用户表
+        :return:
+        '''
+        self.init_db_meta()
+        # 添加用户组初始化数据, 提供两个组,用于关联用户分组的主机
+        self.session.add_all([
+            User_group(gid=1, groupname='ops'),
+            User_group(gid=2, groupname='dev')
+        ])
+        # 添加Users表数据,三个用户, tom, jerry, sam, 主要用户登录堡垒机程序
+        self.session.add_all([
+            Users(uid=1, username='tom', password='123456', gid=1),
+            Users(uid=2, username='jerry', password='123456', gid=1),
+            Users(uid=3, username='sam', password='123456', gid=2), ]
+        )
+        #添加主机的ssh账号密码, 默认提供一个用户, test/123456
+        self.session.add_all([
+            User_to_host(uid=1,username='test',password='123456'),
+        ])
+
+        # 添加项目表初始数据, 项目名称, 默认提供两个
+        self.session.add_all([
+            Project(pid=1, p_name='cloud'),
+            Project(pid=2, p_name='bigdata')
+        ])
+        self.session.commit()
+
     def init_db(self):
         '''
         初始化堡垒机数据库
@@ -99,28 +129,7 @@ class operate_db:
         :return:
         '''
         self.init_db_meta()
-        #添加Users表数据,三个用户, tom, jerry, sam, 主要用户登录堡垒机程序
-        self.session.add_all([
-            Users(username='tom',password='123456',gid=1),
-            Users(username='jerry',password='123456',gid=1),
-            Users(username='sam',password='123456',gid=2),]
-        )
-        #添加项目表初始数据, 项目名称, 默认提供两个
-        self.session.add_all([
-            Project(p_name='cloud'),
-            Project(p_name='bigdata')
-        ])
-
-        #添加用户组初始化数据, 提供两个组,用于关联用户分组的主机
-        self.session.add_all([
-            User_group(groupname='ops'),
-            User_group(groupname='dev')
-        ])
-        #添加主机的ssh账号密码, 默认提供一个用户, test/123456
-        self.session.add_all([
-            User_to_host(username='test',password='123456'),
-        ])
-
+        self.init_db_user()
         #添加主机表数据
         self.session.add_all([
             Host(host_ip='192.168.1.105',port=22,hostname='server1',uid=1,pid=1,gid=1),
@@ -252,4 +261,5 @@ class Operate_manager:
                 except ValueError:
                     print('输入操作序列不合法')
                     continue
+
 
